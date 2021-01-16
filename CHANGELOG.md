@@ -1,7 +1,7 @@
 # Changelog
 
-All notable changes to `:package_name` will be documented in this file.
+All notable changes to `laravel-one-time-password` will be documented in this file.
 
-## 1.0.0 - 202X-XX-XX
+## 0.1.0 - 16-01-2021
 
 - initial release

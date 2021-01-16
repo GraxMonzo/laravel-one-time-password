@@ -1,53 +1,101 @@
-# :package_description
+# laravel-one-time-password
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_name/:package_name.svg?style=flat-square)](https://packagist.org/packages/:vendor_name/:package_name)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/:vendor_name/:package_name/run-tests?label=tests)](https://github.com/:vendor_name/:package_name/actions?query=workflow%3ATests+branch%3Amaster)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_name/:package_name.svg?style=flat-square)](https://packagist.org/packages/:vendor_name/:package_name)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/graxmonzo/laravel-one-time-password.svg?style=flat-square)](https://packagist.org/packages/graxmonzo/laravel-one-time-password)
+[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/graxmonzo/laravel-one-time-password/run-tests?label=tests)](https://github.com/graxmonzo/laravel-one-time-password/actions?query=workflow%3ATests+branch%3Amaster)
+[![Total Downloads](https://img.shields.io/packagist/dt/graxmonzo/laravel-one-time-password.svg?style=flat-square)](https://packagist.org/packages/graxmonzo/laravel-one-time-password)
 
-**Note:** Run `./configure-skeleton` to get started, or manually replace  ```:author_name``` ```:author_username``` ```:author_email``` ```:vendor_name``` ```:package_name``` ```:package_description``` with their correct values in [README.md](README.md), [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](.github/CONTRIBUTING.md), [LICENSE.md](LICENSE.md) and [composer.json](composer.json) files, then delete this line. You can also run `configure-skeleton.sh` to do this automatically.
+Rails [active_model_otp](https://github.com/heapsource/active_model_otp/) implementation on Laravel
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+This package provides a trait that will generate a one time password every 30 seconds.
 
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/package-skeleton-laravel.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/package-skeleton-laravel)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+```php
+$user->otpCode() // => 324650
+$user->authenticate(324650) // => true
+sleep(30)
+$user->authenticate(324650) // => false
+```
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require :vendor_name/:package_name
-```
-
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --provider="Spatie\Skeleton\SkeletonServiceProvider" --tag="migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-```bash
-php artisan vendor:publish --provider="Spatie\Skeleton\SkeletonServiceProvider" --tag="config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
+composer require graxmonzo/laravel-one-time-password
 ```
 
 ## Usage
 
+Your Eloquent models should use the `GraxMonzo\OneTimePassWord\HasOTP` trait and the `GraxMonzo\OneTimePassWord\OTPOptions` class.
+
+The trait contains an abstract method `getOTPOptions()` that you must implement yourself.
+
+Your models' migrations should have a field to save the generated OTP secret to.
+
+Here's an example of how to implement the trait:
+
 ```php
-$skeleton = new Spatie\Skeleton();
-echo $skeleton->echoPhrase('Hello, Spatie!');
+namespace App;
+
+use GraxMonzo\OneTimePassWord\HasOTP;
+use GraxMonzo\OneTimePassWord\OTPOptions;
+use Illuminate\Database\Eloquent\Model;
+
+class YourEloquentModel extends Model
+{
+    use HasOTP;
+
+    /**
+     * Get the options for generating OTP.
+     */
+    public function getOTPOptions() : OTPOptions
+    {
+        return OTPOptions::create()
+            ->saveOTPTo('otp_secret_key');
+    }
+}
+```
+
+With its migration:
+
+```php
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateYourEloquentModelTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('your_eloquent_models', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('otp_secret_key'); // Field name same as your `saveOTPTo`
+            $table->timestamps();
+        });
+    }
+}
+```
+
+### Getting current code
+
+```php
+$model = new YourEloquentModel();
+
+$model->otpCode(); # => 186522
+sleep(30);
+$code = $model->otpCode(); # => 850738
+```
+
+### Authenticating using a code
+
+```php
+$model->authenticate($code); # => true
+sleep(30);
+$model->authenticate($code); # => false
 ```
 
 ## Testing
@@ -70,8 +118,8 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [:author_name](https://github.com/:author_username)
-- [All Contributors](../../contributors)
+-   [GraxMonzo](https://github.com/graxmonzo)
+-   [All Contributors](../../contributors)
 
 ## License
 

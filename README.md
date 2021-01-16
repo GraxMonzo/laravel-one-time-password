@@ -4,7 +4,7 @@
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/graxmonzo/laravel-one-time-password/run-tests?label=tests)](https://github.com/graxmonzo/laravel-one-time-password/actions?query=workflow%3ATests+branch%3Amaster)
 [![Total Downloads](https://img.shields.io/packagist/dt/graxmonzo/laravel-one-time-password.svg?style=flat-square)](https://packagist.org/packages/graxmonzo/laravel-one-time-password)
 
-Rails [active_model_otp](https://github.com/heapsource/active_model_otp/) implementation on Laravel
+Laravel implementation of Rails's [active_model_otp](https://github.com/heapsource/active_model_otp/) package.
 
 This package provides a trait that will generate a one time password every 30 seconds.
 

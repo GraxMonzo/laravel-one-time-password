@@ -21,7 +21,7 @@ trait HasOTP
     {
         $this->otpOptions = $this->getOTPOptions();
 
-        if (!$this->otpOptions->generateOTPOnCreate) {
+        if (! $this->otpOptions->generateOTPOnCreate) {
             return;
         }
 
@@ -65,6 +65,7 @@ trait HasOTP
         } else {
             $time = $options;
         }
+
         return (new TOTP($this->$otpField, compact('digits')))->at($time);
     }
 }

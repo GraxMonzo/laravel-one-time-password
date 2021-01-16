@@ -22,12 +22,12 @@
 namespace GraxMonzo\OneTimePassword;
 
 /**
- * One Time Password Generator 
- * 
+ * One Time Password Generator
+ *
  * The OTP class allow the generation of one-time
  * password that is described in rfc 4xxx.
- * 
- * This is class is meant to be compatible with 
+ *
+ * This is class is meant to be compatible with
  * Google Authenticator.
  *
  * This class was originally ported from the rotp
@@ -49,7 +49,7 @@ class OTP
 
     /**
      * The number of digits in the one-time password
-     * @var integer
+     * @var int
      */
     public $digits;
 
@@ -58,14 +58,14 @@ class OTP
      * @param string $secret the secret key
      * @param array $opt options array can contain the
      * following keys :
-     *   @param integer digits : the number of digits in the one time password
+     *   @param int digits : the number of digits in the one time password
      *   Currently Google Authenticator only support 6. Defaults to 6.
      *   @param string digest : the algorithm used for the hmac hash function
      *   Google Authenticator only support sha1. Defaults to sha1
      *
      * @return new OTP class.
      */
-    public function __construct($secret, $opt = array())
+    public function __construct($secret, $opt = [])
     {
         $this->digits = isset($opt['digits']) ? $opt['digits'] : 6;
         $this->digest = isset($opt['digest']) ? $opt['digest'] : 'sha1';
@@ -75,10 +75,10 @@ class OTP
     /**
      * Generate a one-time password
      *
-     * @param integer $input : number used to seed the hmac hash function.
+     * @param int $input : number used to seed the hmac hash function.
      * This number is usually a counter (HOTP) or calculated based on the current
      * timestamp (see TOTP class).
-     * @return integer the one-time password 
+     * @return int the one-time password
      */
     public function generateOTP($input)
     {
@@ -91,6 +91,7 @@ class OTP
             ($hmac[$offset + 1] & 0xFF) << 16 |
             ($hmac[$offset + 2] & 0xFF) << 8 |
             ($hmac[$offset + 3] & 0xFF);
+
         return $code % pow(10, $this->digits);
     }
 
@@ -108,17 +109,18 @@ class OTP
 
     /**
      * Turns an integer in a OATH bytestring
-     * @param integer $int
+     * @param int $int
      * @access private
      * @return string bytestring
      */
     public function intToBytestring($int)
     {
-        $result = array();
+        $result = [];
         while ($int != 0) {
             $result[] = chr($int & 0xFF);
             $int >>= 8;
         }
+
         return str_pad(join("", array_reverse($result)), 8, "\000", STR_PAD_LEFT);
     }
 }

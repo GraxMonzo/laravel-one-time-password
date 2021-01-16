@@ -36,8 +36,8 @@ Here's an example of how to implement the trait:
 ```php
 namespace App;
 
-use GraxMonzo\OneTimePassWord\HasOTP;
-use GraxMonzo\OneTimePassWord\OTPOptions;
+use GraxMonzo\OneTimePassword\HasOTP;
+use GraxMonzo\OneTimePassword\OTPOptions;
 use Illuminate\Database\Eloquent\Model;
 
 class YourEloquentModel extends Model

@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 trait HasOTP
 {
-    protected int $digits = 6;
-
     protected OTPOptions $otpOptions;
 
     abstract public function getOTPOptions(): OTPOptions;
@@ -46,7 +44,9 @@ trait HasOTP
     {
         $this->otpOptions = $this->getOTPOptions();
         $otpField = $this->otpOptions->otpField;
-        $totp = new TOTP($this->$otpField, ['digits' => $this->digits]);
+        $digits = $this->otpOptions->digits;
+
+        $totp = new TOTP($this->$otpField, compact('digits'));
         if ($drift = $options['drift']) {
             return $totp->verify($code, $drift);
         } else {
@@ -58,11 +58,13 @@ trait HasOTP
     {
         $this->otpOptions = $this->getOTPOptions();
         $otpField = $this->otpOptions->otpField;
+        $digits = $this->otpOptions->digits;
+
         if (is_array($options)) {
             $time = $options['time'] ?? time();
         } else {
             $time = $options;
         }
-        return (new TOTP($this->$otpField, ['digits' => $this->digits]))->at($time);
+        return (new TOTP($this->$otpField, compact('digits')))->at($time);
     }
 }

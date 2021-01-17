@@ -24,12 +24,12 @@ abstract class TestCase extends Orchestra
      */
     protected function getEnvironmentSetUp($app)
     {
-        // $this->initializeDirectory($this->getTempDirectory());
+        $this->initializeDirectory($this->getTempDirectory());
 
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
             'driver' => 'sqlite',
-            'database' => ':memory:',
+            'database' => $this->getTempDirectory().'/database.sqlite',
             'prefix' => '',
         ]);
     }

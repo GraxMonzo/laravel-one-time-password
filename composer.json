@@ -40,7 +40,7 @@
     },
     "scripts": {
         "psalm": "vendor/bin/psalm",
-        "test": "phpunit --colors=always"
+        "test": "phpunit --colors=always --testdox"
     },
     "config": {
         "sort-packages": true

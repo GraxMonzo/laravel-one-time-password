@@ -2,70 +2,81 @@
 
 namespace GraxMonzo\OneTimePassword;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 trait HasOTP
 {
     protected OTPOptions $otpOptions;
 
-    abstract public function getOTPOptions(): OTPOptions;
+    abstract public function otpOptions(): OTPOptions;
 
-    protected static function bootHasOTP()
+    protected static function bootHasOTP(): void
     {
         static::creating(function (Model $model) {
-            $model->generateOTPOnCreate();
+            $model->setupOtp();
         });
     }
 
-    protected function generateOTPOnCreate()
+    protected function setupOtp(): void
     {
-        $this->otpOptions = $this->getOTPOptions();
+        $this->otpOptions = $this->otpOptions();
+        extract(get_object_vars($this->otpOptions));
 
-        if (! $this->otpOptions->generateOTPOnCreate) {
-            return;
-        }
-
-        $this->addSecret();
+        $this->$otpSecret = $this->getOTPRandomSecret();
+        $this->$otpCounter = 0;
     }
 
-    protected function getOTPRandomSecret($length = 20)
+    protected function getOTPRandomSecret($length = 20): string
     {
         return Base32::random($length);
     }
 
-    protected function addSecret()
+    public function otp(): ?int
     {
-        $otpField = $this->otpOptions->otpField;
+        $this->otpOptions = $this->otpOptions();
+        extract(get_object_vars($this->otpOptions));
 
-        $this->$otpField = $this->getOTPRandomSecret();
-    }
+        if (! $this->$otpSecret) {
+            return null;
+        }
 
-    public function authenticate($code, $options = [])
-    {
-        $this->otpOptions = $this->getOTPOptions();
-        $otpField = $this->otpOptions->otpField;
-        $digits = $this->otpOptions->digits;
+        $hotp = new HOTP($this->$otpSecret, compact('digits'));
 
-        $totp = new TOTP($this->$otpField, compact('digits'));
-        if ($drift = $options['drift']) {
-            return $totp->verify($code, $drift);
-        } else {
-            return $totp->verify($code);
+        DB::beginTransaction();
+
+        try {
+            $this->$otpCounter = $this->$otpCounter + 1;
+            DB::commit();
+            return $hotp->at($this->$otpCounter);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return null;
         }
     }
 
-    public function otpCode($options = [])
+    public function verify($otp): ?bool
     {
-        $this->otpOptions = $this->getOTPOptions();
-        $otpField = $this->otpOptions->otpField;
-        $digits = $this->otpOptions->digits;
+        $this->otpOptions = $this->otpOptions();
+        extract(get_object_vars($this->otpOptions));
 
-        if (is_array($options)) {
-            $time = $options['time'] ?? time();
-        } else {
-            $time = $options;
+        if (! $this->$otpSecret) {
+            return null;
         }
 
-        return (new TOTP($this->$otpField, compact('digits')))->at($time);
+        $hotp = new HOTP($this->$otpSecret, compact('digits'));
+
+        DB::beginTransaction();
+
+        try {
+            $otpStatus = $hotp->verify($otp, $this->$otpCounter);
+            $this->$otpCounter = $this->$otpCounter + 1;
+            DB::commit();
+            return $otpStatus;
+        } catch (Exception $e) {
+            DB::rollBack();
+            return null;
+        }
     }
 }

@@ -4,25 +4,26 @@ namespace GraxMonzo\OneTimePassword;
 
 class OTPOptions
 {
-    public string $otpField;
+    public string $otpSecret = 'otp_secret';
+
+    public string $otpCounter = 'otp_counter';
 
     public int $digits = 6;
-
-    public bool $generateOTPOnCreate = true;
 
     public static function create(): self
     {
         return new static();
     }
 
-    public function saveOTPTo(string $fieldName): self
+    public function fieldsToSave(string $secretField, string $counterField): self
     {
-        $this->otpField = $fieldName;
+        $this->otpSecret = $secretField;
+        $this->otpCounter = $counterField;
 
         return $this;
     }
 
-    public function withDigits(int $digits): self
+    public function digitsCount(int $digits): self
     {
         $this->digits = $digits;
 

@@ -4,4 +4,8 @@ All notable changes to `laravel-one-time-password` will be documented in this fi
 
 ## 0.1.0 - 16-01-2021
 
-- initial release
+- Initial release
+
+## 1.0.0 - 18-01-2021
+
+- Moving from Time-based OTP to Event-based OTP

@@ -39,7 +39,7 @@ trait HasOTP
         $this->otpOptions = $this->otpOptions();
         extract(get_object_vars($this->otpOptions));
 
-        if (!$this->$otpSecret) {
+        if (! $this->$otpSecret) {
             return null;
         }
 
@@ -64,7 +64,7 @@ trait HasOTP
         $this->otpOptions = $this->otpOptions();
         extract(get_object_vars($this->otpOptions));
 
-        if (!$this->$otpSecret) {
+        if (! $this->$otpSecret) {
             return null;
         }
 

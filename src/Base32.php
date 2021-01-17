@@ -16,6 +16,7 @@ class Base32 extends VendorBase32
     public static function randomBase32($strLen = 32)
     {
         $byteLength = $strLen * 5 / 8;
+
         return self::random($byteLength);
     }
 }

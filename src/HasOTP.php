@@ -45,18 +45,8 @@ trait HasOTP
 
         $hotp = HOTP::create($this->$otpSecret, 0, 'sha1', $digits);
 
-        DB::beginTransaction();
-
-        try {
-            $this->$otpCounter = $this->$otpCounter + 1;
-            DB::commit();
-
-            return $hotp->at($this->$otpCounter);
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            return null;
-        }
+        $this->$otpCounter = $this->$otpCounter + 1;
+        return $hotp->at($this->$otpCounter);
     }
 
     public function verify(string $otp): ?bool
@@ -70,18 +60,8 @@ trait HasOTP
 
         $hotp = HOTP::create($this->$otpSecret, 0, 'sha1', $digits);
 
-        DB::beginTransaction();
-
-        try {
-            $otpStatus = $hotp->verify($otp, $this->$otpCounter);
-            $this->$otpCounter = $this->$otpCounter + 1;
-            DB::commit();
-
-            return $otpStatus;
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            return null;
-        }
+        $otpStatus = $hotp->verify($otp, $this->$otpCounter);
+        $this->$otpCounter++;
+        return $otpStatus;
     }
 }

@@ -2,9 +2,7 @@
 
 namespace GraxMonzo\OneTimePassword;
 
-use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use OTPHP\HOTP;
 
 trait HasOTP
@@ -46,6 +44,7 @@ trait HasOTP
         $hotp = HOTP::create($this->$otpSecret, 0, 'sha1', $digits);
 
         $this->$otpCounter = $this->$otpCounter + 1;
+
         return $hotp->at($this->$otpCounter);
     }
 
@@ -62,6 +61,7 @@ trait HasOTP
 
         $otpStatus = $hotp->verify($otp, $this->$otpCounter);
         $this->$otpCounter++;
+
         return $otpStatus;
     }
 }

@@ -49,9 +49,11 @@ trait HasOTP
         try {
             $this->$otpCounter = $this->$otpCounter + 1;
             DB::commit();
+
             return $hotp->at($this->$otpCounter);
         } catch (Exception $e) {
             DB::rollBack();
+
             return null;
         }
     }
@@ -73,9 +75,11 @@ trait HasOTP
             $otpStatus = $hotp->verify($otp, $this->$otpCounter);
             $this->$otpCounter = $this->$otpCounter + 1;
             DB::commit();
+
             return $otpStatus;
         } catch (Exception $e) {
             DB::rollBack();
+
             return null;
         }
     }

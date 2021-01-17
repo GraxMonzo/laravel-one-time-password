@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2011 Le Lag 
+ * Copyright (c) 2011 Le Lag
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -22,13 +22,13 @@
 namespace GraxMonzo\OneTimePassword;
 
 /**
- * HOTP - One time password generator 
- * 
- * The HOTP class allow for the generation 
- * and verification of one-time password using 
+ * HOTP - One time password generator
+ *
+ * The HOTP class allow for the generation
+ * and verification of one-time password using
  * the HOTP specified algorithm.
  *
- * This class is meant to be compatible with 
+ * This class is meant to be compatible with
  * Google Authenticator
  *
  * This class was originally ported from the rotp
@@ -47,11 +47,10 @@ class HOTP extends OTP
         return $this->generateOTP($count);
     }
 
-
     /**
      * Verify if a password is valid for a specific counter value
      *
-     * @param int $otp the one-time password 
+     * @param int $otp the one-time password
      * @param int $counter the counter value
      * @return  bool true if the counter is valid, false otherwise
      */
@@ -62,11 +61,11 @@ class HOTP extends OTP
 
     /**
      * Returns the uri for a specific secret for hotp method.
-     * Can be encoded as a image for simple configuration in 
+     * Can be encoded as a image for simple configuration in
      * Google Authenticator.
      *
      * @param string $name the name of the account / profile
-     * @param int $initial_count the initial counter 
+     * @param int $initial_count the initial counter
      * @return string the uri for the hmac secret
      */
     public function provisioning_uri($name, $initial_count)

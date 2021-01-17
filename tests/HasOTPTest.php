@@ -43,8 +43,7 @@ class HasOTPTest extends TestCase
     /** @test */
     public function it_can_generate_otp_with_a_custom_digits()
     {
-        $model = new class extends TestModel
-        {
+        $model = new class extends TestModel {
             public function otpOptions(): OTPOptions
             {
                 return parent::otpOptions()->digitsCount(4);

@@ -31,7 +31,7 @@ trait HasOTP
 
     protected function getOTPRandomSecret($length = 20): string
     {
-        return Base32::randomBase32($length);
+        return Base32::random($length);
     }
 
     public function otp(): ?string

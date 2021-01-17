@@ -12,11 +12,4 @@ class Base32 extends VendorBase32
 
         return parent::encode($randomBytes);
     }
-
-    public static function randomBase32(int $strLen = 32): string
-    {
-        $byteLength = $strLen * 5 / 8;
-
-        return self::random($byteLength);
-    }
 }

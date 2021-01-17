@@ -20,7 +20,8 @@ class HasOTPTest extends TestCase
         $model = TestModel::create();
 
         $otp = $model->otp();
-        $this->assertIsInt($otp);
+
+        $this->assertEquals(6, strlen($otp));
         $this->assertNotEquals($otp, $model->otp());
     }
 
@@ -32,7 +33,7 @@ class HasOTPTest extends TestCase
         $otp = $model->otp();
         $this->assertTrue($model->verify($otp));
         $this->assertFalse($model->verify($otp));
-        
+
         $otp = $model->otp();
         $this->assertTrue($model->verify($otp));
         $model->otp_counter -= 1;
@@ -52,6 +53,6 @@ class HasOTPTest extends TestCase
 
         $model->save();
 
-        $this->assertEquals(4, strlen(strval($model->otp())));
+        $this->assertEquals(4, strlen($model->otp()));
     }
 }

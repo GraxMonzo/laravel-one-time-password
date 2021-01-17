@@ -5,6 +5,7 @@ namespace GraxMonzo\OneTimePassword;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use OTPHP\HOTP;
 
 trait HasOTP
 {
@@ -30,19 +31,19 @@ trait HasOTP
 
     protected function getOTPRandomSecret($length = 20): string
     {
-        return Base32::random($length);
+        return Base32::randomBase32($length);
     }
 
-    public function otp(): ?int
+    public function otp(): ?string
     {
         $this->otpOptions = $this->otpOptions();
         extract(get_object_vars($this->otpOptions));
 
-        if (! $this->$otpSecret) {
+        if (!$this->$otpSecret) {
             return null;
         }
 
-        $hotp = new HOTP($this->$otpSecret, compact('digits'));
+        $hotp = HOTP::create($this->$otpSecret, 0, 'sha1', $digits);
 
         DB::beginTransaction();
 
@@ -56,16 +57,16 @@ trait HasOTP
         }
     }
 
-    public function verify($otp): ?bool
+    public function verify(string $otp): ?bool
     {
         $this->otpOptions = $this->otpOptions();
         extract(get_object_vars($this->otpOptions));
 
-        if (! $this->$otpSecret) {
+        if (!$this->$otpSecret) {
             return null;
         }
 
-        $hotp = new HOTP($this->$otpSecret, compact('digits'));
+        $hotp = HOTP::create($this->$otpSecret, 0, 'sha1', $digits);
 
         DB::beginTransaction();
 

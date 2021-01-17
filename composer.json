@@ -20,11 +20,13 @@
     "require": {
         "php": "^7.4|^8.0",
         "christian-riesen/base32": "^1.5",
-        "illuminate/contracts": "^8.0"
+        "illuminate/contracts": "^8.0",
+        "spomky-labs/otphp": "10.0.1"
     },
     "require-dev": {
         "orchestra/testbench": "^6.0",
-        "phpunit/phpunit": "^9.3"
+        "phpunit/phpunit": "^9.3",
+        "vimeo/psalm": "^4.4"
     },
     "autoload": {
         "psr-4": {

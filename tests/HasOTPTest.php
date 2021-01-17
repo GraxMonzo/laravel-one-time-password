@@ -21,6 +21,7 @@ class HasOTPTest extends TestCase
 
         $otp = $model->otp();
 
+        var_dump($otp,  strlen($otp));
         $this->assertEquals(6, strlen($otp));
         $this->assertNotEquals($otp, $model->otp());
     }

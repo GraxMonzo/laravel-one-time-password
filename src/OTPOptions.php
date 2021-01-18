@@ -15,7 +15,7 @@ class OTPOptions
         return new static();
     }
 
-    public function fieldsToSave(string $secretField, string $counterField): self
+    public function saveToFields(string $secretField, string $counterField): self
     {
         $this->otpSecret = $secretField;
         $this->otpCounter = $counterField;

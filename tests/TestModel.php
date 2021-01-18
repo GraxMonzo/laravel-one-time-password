@@ -40,6 +40,6 @@ class TestModel extends Model
     public function getDefaultOtpOptions(): OTPOptions
     {
         return OTPOptions::create()
-            ->fieldsToSave('otp_secret', 'otp_counter');
+            ->saveToFields('otp_secret', 'otp_counter');
     }
 }

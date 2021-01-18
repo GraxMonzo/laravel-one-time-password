@@ -49,7 +49,7 @@ class YourEloquentModel extends Model
     public function otpOptions() : OTPOptions
     {
         return OTPOptions::create()
-            ->fieldsToSave('otp_secret', 'otp_counter')
+            ->saveToFields('otp_secret', 'otp_counter')
             ->digitsCount(6); // optional
     }
 }

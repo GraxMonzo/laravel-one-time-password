@@ -1,18 +1,17 @@
 # laravel-one-time-password
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/graxmonzo/laravel-one-time-password.svg?style=flat-square)](https://packagist.org/packages/graxmonzo/laravel-one-time-password)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/graxmonzo/laravel-one-time-password/run-tests?label=tests)](https://github.com/graxmonzo/laravel-one-time-password/actions?query=workflow%3ATests+branch%3Amaster)
-[![Total Downloads](https://img.shields.io/packagist/dt/graxmonzo/laravel-one-time-password.svg?style=flat-square)](https://packagist.org/packages/graxmonzo/laravel-one-time-password)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/graxmonzo/laravel-one-time-password.svg)](https://packagist.org/packages/graxmonzo/laravel-one-time-password)
+[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/graxmonzo/laravel-one-time-password/Tests?label=tests)](https://github.com/graxmonzo/laravel-one-time-password/actions?query=workflow%3ATests+branch%3Amaster)
+[![Total Downloads](https://img.shields.io/packagist/dt/graxmonzo/laravel-one-time-password.svg)](https://packagist.org/packages/graxmonzo/laravel-one-time-password)
 
 Laravel implementation of Rails's [active_model_otp](https://github.com/heapsource/active_model_otp/) package.
 
-This package provides a trait that will generate a one time password every 30 seconds.
+Simple OTP generation.
 
 ```php
-$user->otpCode() // => 324650
-$user->authenticate(324650) // => true
-sleep(30)
-$user->authenticate(324650) // => false
+$code = $user->otp(); // => "324650"
+$user->verify($code); // => true
+$user->verify($code); // => false
 ```
 
 ## Installation
@@ -27,9 +26,9 @@ composer require graxmonzo/laravel-one-time-password
 
 Your Eloquent models should use the `GraxMonzo\OneTimePassWord\HasOTP` trait and the `GraxMonzo\OneTimePassWord\OTPOptions` class.
 
-The trait contains an abstract method `getOTPOptions()` that you must implement yourself.
+The trait contains an abstract method `otpOptions()` that you must implement yourself.
 
-Your models' migrations should have a field to save the generated OTP secret to.
+Your models' migrations should have a fields to save the OTP secret and counter to.
 
 Here's an example of how to implement the trait:
 
@@ -47,10 +46,11 @@ class YourEloquentModel extends Model
     /**
      * Get the options for generating OTP.
      */
-    public function getOTPOptions() : OTPOptions
+    public function otpOptions() : OTPOptions
     {
         return OTPOptions::create()
-            ->saveOTPTo('otp_secret_key');
+            ->fieldsToSave('otp_secret', 'otp_counter')
+            ->digitsCount(6); // optional
     }
 }
 ```
@@ -73,29 +73,36 @@ class CreateYourEloquentModelTable extends Migration
     {
         Schema::create('your_eloquent_models', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('otp_secret_key'); // Field name same as your `saveOTPTo`
+            $table->string('otp_secret');
+            $table->integer('otp_counter');
             $table->timestamps();
         });
     }
 }
 ```
 
-### Getting current code
+### Get code
 
 ```php
 $model = new YourEloquentModel();
 
-$model->otpCode(); # => 186522
-sleep(30);
-$code = $model->otpCode(); # => 850738
+$model->otp(); # => "186522"
+$code = $model->otp(); # => "850738"
 ```
 
-### Authenticating using a code
+### Verify code
 
 ```php
-$model->authenticate($code); # => true
-sleep(30);
-$model->authenticate($code); # => false
+$model->verify($code); # => true
+$model->verify($code); # => false
+```
+
+### Verify code with counter adjust
+
+```php
+$model->verify($code); # => true
+$model->otp_counter -= 1;
+$model->verify($code); # => true
 ```
 
 ## Testing

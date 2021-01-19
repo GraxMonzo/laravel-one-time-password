@@ -13,3 +13,7 @@ All notable changes to `laravel-one-time-password` will be documented in this fi
 ## 1.1.0 - 18-01-2021
 
 - Rename method from `fieldsToSave` to `saveToFields`
+
+## 1.1.1 - 19-01-2021
+
+- Fixed: counter not saving

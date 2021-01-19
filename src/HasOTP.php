@@ -43,7 +43,7 @@ trait HasOTP
 
         $hotp = HOTP::create($this->$otpSecret, 0, 'sha1', $digits);
 
-        $this->$otpCounter = $this->$otpCounter + 1;
+        $this->addStep($otpCounter);
 
         return $hotp->at($this->$otpCounter);
     }
@@ -60,8 +60,16 @@ trait HasOTP
         $hotp = HOTP::create($this->$otpSecret, 0, 'sha1', $digits);
 
         $otpStatus = $hotp->verify($otp, $this->$otpCounter);
-        $this->$otpCounter++;
+
+        $this->addStep($otpCounter);
 
         return $otpStatus;
+    }
+
+    protected function addStep($counter)
+    {
+        $this->fill([
+            $counter => $this->$counter + 1,
+        ])->saveOrFail();
     }
 }

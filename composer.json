@@ -1,6 +1,6 @@
 {
     "name": "graxmonzo/laravel-one-time-password",
-    "description": "One time password generation trait for Laravel",
+    "description": "One time password (OTP) generation trait for Laravel",
     "keywords": [
         "laravel",
         "laravel-one-time-password",
